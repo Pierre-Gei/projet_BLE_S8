@@ -13,16 +13,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.isen.androidsmartdevice.R
+import fr.isen.androidsmartdevice.service.BLEService
 
 class ScanView {
     @Composable
     fun ScanPage(modifier: Modifier) {
         var isScanning by remember { mutableStateOf(false) }
         var devices by remember { mutableStateOf(listOf<String>()) }
+        val context = LocalContext.current
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -42,13 +45,18 @@ class ScanView {
                 modifier = Modifier
                     .size(100.dp)
                     .clickable {
-                        isScanning = !isScanning
-                        if (isScanning) {
-                            // Start scanning logic
-                            devices = listOf("Device 1", "Device 2") // Example devices
-                        } else {
-                            // Stop scanning logic
-                            devices = emptyList()
+                        if (BLEService().bleInitErr(context)) {
+                            // Handle BLE initialization errors
+
+                        } else{
+                            isScanning = !isScanning
+                            if (isScanning) {
+                                // Start scanning logic
+                                devices = listOf("Device 1", "Device 2") // Example devices
+                            } else {
+                                // Stop scanning logic
+                                devices = emptyList()
+                            }
                         }
                     }
                     .padding(bottom = 16.dp)
