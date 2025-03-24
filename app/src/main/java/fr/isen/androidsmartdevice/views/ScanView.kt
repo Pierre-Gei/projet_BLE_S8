@@ -40,7 +40,7 @@ class ScanView(private val BLEInstance: BLEService) {
    @Composable
     fun ScanPage(modifier: Modifier) {
         var isScanning by remember { mutableStateOf(BLEInstance.isScanning) }
-        var devices by remember { mutableStateOf(listOf<String>()) }
+        var devices by remember { mutableStateOf(setOf<String>()) }
         var showUnnamedDevices by remember { mutableStateOf(true) }
         val context = LocalContext.current
 
@@ -91,7 +91,7 @@ class ScanView(private val BLEInstance: BLEService) {
                                 isScanning = false
                             } else {
                                 if (checkPermission(Manifest.permission.BLUETOOTH_SCAN, context)) {
-                                    devices = emptyList()
+                                    devices = emptySet()
                                     BLEInstance.startScan(
                                         onDeviceFound = { device: BluetoothDevice ->
                                             val deviceName = device.name ?: "Unknown Device"
@@ -123,7 +123,7 @@ class ScanView(private val BLEInstance: BLEService) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(devices) { device ->
+                items(devices.toList()) { device ->
                     if (showUnnamedDevices || device.contains("Unknown Device").not()) {
                         Text(
                             text = device,
