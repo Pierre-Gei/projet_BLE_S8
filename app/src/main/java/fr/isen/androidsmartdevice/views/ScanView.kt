@@ -1,5 +1,8 @@
 package fr.isen.androidsmartdevice.views
 
+import BLEService
+import android.bluetooth.BluetoothDevice
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,15 +21,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.isen.androidsmartdevice.R
-import fr.isen.androidsmartdevice.service.BLEService
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 
-class ScanView {
-    @Composable
+class ScanView(private val BLEInstance: BLEService) {
+   @Composable
     fun ScanPage(modifier: Modifier) {
         var isScanning by remember { mutableStateOf(false) }
         var devices by remember { mutableStateOf(listOf<String>()) }
         val context = LocalContext.current
 
+        DisposableEffect(Unit) {
+            onDispose {
+                if (isScanning && checkPermission(Manifest.permission.BLUETOOTH_SCAN, context)) {
+                    BLEInstance.stopScan()
+                }
+            }
+        }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
@@ -45,17 +58,20 @@ class ScanView {
                 modifier = Modifier
                     .size(100.dp)
                     .clickable {
-                        if (BLEService().bleInitErr(context)) {
-                            // Handle BLE initialization errors
-
-                        } else{
+                        if (BLEInstance.bleInitErr(context)) {
+                            Toast.makeText(context, "BLE initialization error", Toast.LENGTH_SHORT).show()
+                        } else {
                             isScanning = !isScanning
                             if (isScanning) {
-                                // Start scanning logic
-                                devices = listOf("Device 1", "Device 2") // Example devices
+                                if (checkPermission(Manifest.permission.BLUETOOTH_SCAN, context)) {
+                                    BLEInstance.startScan { device: BluetoothDevice ->
+                                        devices = devices + ((device.name ?: "Unknown Device") + " - " + device.address)
+                                    }
+                                }
                             } else {
-                                // Stop scanning logic
-                                devices = emptyList()
+                                if (checkPermission(Manifest.permission.BLUETOOTH_SCAN, context)) {
+                                    BLEInstance.stopScan()
+                                }
                             }
                         }
                     }
@@ -79,5 +95,9 @@ class ScanView {
                 }
             }
         }
+    }
+
+    private fun checkPermission(permission: String, context: Context): Boolean {
+        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
     }
 }
