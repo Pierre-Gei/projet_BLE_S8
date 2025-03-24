@@ -41,7 +41,7 @@ class ScanView(private val BLEInstance: BLEService) {
     fun ScanPage(modifier: Modifier) {
         var isScanning by remember { mutableStateOf(BLEInstance.isScanning) }
         var devices by remember { mutableStateOf(setOf<String>()) }
-        var showUnnamedDevices by remember { mutableStateOf(true) }
+        var showUnnamedDevices by remember { mutableStateOf(false) }
         val context = LocalContext.current
 
         DisposableEffect(Unit) {
