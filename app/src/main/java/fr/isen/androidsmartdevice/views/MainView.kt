@@ -1,5 +1,6 @@
 package fr.isen.androidsmartdevice.views
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,14 +15,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import fr.isen.androidsmartdevice.R
+import fr.isen.androidsmartdevice.ScanActivity
 
 class MainView {
     @Composable
     fun MainPage(modifier: Modifier) {
+        val context = LocalContext.current
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
@@ -49,7 +54,8 @@ class MainView {
                 )
                 Button(
                     onClick = {
-                        // Handle button click
+                        val intent = Intent(context, ScanActivity::class.java)
+                        context.startActivity(intent)
                     },
                     modifier = Modifier
                         .padding(top = 16.dp)
