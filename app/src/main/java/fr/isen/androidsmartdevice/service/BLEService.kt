@@ -137,7 +137,7 @@ class BLEService {
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     fun toggleLed(led: Byte) {
-        val gatt = bluetoothGatt ?: return
+        val gatt = bluetoothGatt
         val characteristic = gatt.services[2].characteristics[0]
         if (characteristic != null) {
             val currentState = ledStates[led] ?: false
@@ -155,15 +155,19 @@ class BLEService {
         characteristicIndex: Int,
         enable: Boolean
     ) {
-        val gatt = bluetoothGatt ?: return
+        val gatt = bluetoothGatt
         Log.d("BleService", "setCharacteristicNotification $enable")
         Log.d("BleService", "serviceUID ${gatt.services[serviceIndex].uuid}")
-        Log.d("BleService", "characteristicUID ${gatt.services[serviceIndex].characteristics[characteristicIndex].uuid}")
+        Log.d(
+            "BleService",
+            "characteristicUID ${gatt.services[serviceIndex].characteristics[characteristicIndex].uuid}"
+        )
         val characteristic = gatt.services[serviceIndex].characteristics[characteristicIndex]
         gatt.setCharacteristicNotification(characteristic, enable)
 
         val descriptor = characteristic.descriptors[0]
-        val value = if (enable) BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE else BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
+        val value =
+            if (enable) BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE else BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
         descriptor.setValue(value)
         gatt.writeDescriptor(descriptor)
     }
@@ -172,14 +176,14 @@ class BLEService {
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun writeCharacteristic(characteristic: BluetoothGattCharacteristic, value: Byte) {
         characteristic.value = byteArrayOf(value)
-        bluetoothGatt?.writeCharacteristic(characteristic)
+        bluetoothGatt.writeCharacteristic(characteristic)
     }
 
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     fun disconnectDevice() {
-        bluetoothGatt?.disconnect()
-        bluetoothGatt?.close()
+        bluetoothGatt.disconnect()
+        bluetoothGatt.close()
         Log.d("BleService", "Disconnected from GATT server.")
     }
 

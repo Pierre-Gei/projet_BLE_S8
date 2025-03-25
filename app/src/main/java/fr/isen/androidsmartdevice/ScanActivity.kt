@@ -26,19 +26,29 @@ class ScanActivity : ComponentActivity() {
             // Android 12 and above
             if (permissions[Manifest.permission.BLUETOOTH_SCAN] == true &&
                 permissions[Manifest.permission.BLUETOOTH_CONNECT] == true &&
-                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+            ) {
                 // Permissions granted, proceed with BLE scan
             } else {
-                Toast.makeText(this, "Permissions denied. BLE scan cannot proceed.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Permissions denied. BLE scan cannot proceed.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         } else {
             // Android 8 to 11
             if (permissions[Manifest.permission.BLUETOOTH] == true &&
                 permissions[Manifest.permission.BLUETOOTH_ADMIN] == true &&
-                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+            ) {
                 // Permissions granted, proceed with BLE scan
             } else {
-                Toast.makeText(this, "Permissions denied. BLE scan cannot proceed.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Permissions denied. BLE scan cannot proceed.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
