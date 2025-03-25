@@ -61,6 +61,5 @@ class MainView {
                 Text("Launch BLE Scan")
             }
         }
-
     }
 }

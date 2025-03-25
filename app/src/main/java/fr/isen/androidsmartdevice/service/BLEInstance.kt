@@ -1,4 +1,4 @@
-import fr.isen.androidsmartdevice.service.BLEService
+package fr.isen.androidsmartdevice.service
 
 object BLEInstance {
     val instance: BLEService by lazy {

@@ -1,7 +1,7 @@
 package fr.isen.androidsmartdevice
 
-import BLEInstance
 import android.Manifest
+import android.bluetooth.BluetoothDevice
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -10,11 +10,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import fr.isen.androidsmartdevice.service.BLEInstance
 import fr.isen.androidsmartdevice.ui.theme.AndroidSmartDeviceTheme
 import fr.isen.androidsmartdevice.views.ScanView
 
@@ -59,8 +69,67 @@ class ScanActivity : ComponentActivity() {
         checkPermissions()
         setContent {
             AndroidSmartDeviceTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ScanView(BLEInstance.instance).ScanPage(Modifier.padding(innerPadding))
+                var isScanning by remember { mutableStateOf(BLEInstance.instance.isScanning) }
+                var devices by remember { mutableStateOf(setOf<BluetoothDevice>()) }
+                var showUnnamedDevices by remember { mutableStateOf(false) }
+                val context = LocalContext.current
+
+                DisposableEffect(Unit) {
+                    onDispose {
+                        if (isScanning && BLEInstance.instance.checkPermission(context)) {
+                            BLEInstance.instance.stopScan()
+                        }
+                    }
+                }
+
+
+
+                Scaffold(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.safeDrawing),
+                ) { innerPadding ->
+                    ScanView(
+                        modifier = Modifier.padding(innerPadding),
+                        isScanning = isScanning,
+                        devices = devices,
+                        showUnnamedDevices = showUnnamedDevices,
+                        onShowUnnamedDevicesChange = { showUnnamedDevices = it },
+                        onScanButtonClick = {
+                            if (BLEInstance.instance.bleInitErr(context)) {
+                                Toast.makeText(
+                                    context,
+                                    "BLE initialization error",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                if (isScanning) {
+                                    BLEInstance.instance.stopScan()
+                                    isScanning = false
+                                } else {
+                                    if (BLEInstance.instance.checkPermission(context)) {
+                                        devices = emptySet()
+                                        BLEInstance.instance.startScan(
+                                            onDeviceFound = { device: BluetoothDevice ->
+                                                devices = devices + device
+                                            },
+                                            onScanStopped = {
+                                                isScanning = false
+                                            }
+                                        )
+                                        isScanning = true
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Permission denied. BLE scan cannot proceed.",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            }
+                        }
+                    )
+
                 }
             }
         }
