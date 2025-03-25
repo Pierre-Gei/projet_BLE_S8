@@ -1,6 +1,6 @@
 package fr.isen.androidsmartdevice
 
-import BLEInstance
+import fr.isen.androidsmartdevice.service.BLEInstance
 import android.bluetooth.BluetoothDevice
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -17,7 +17,6 @@ import fr.isen.androidsmartdevice.ui.theme.AndroidSmartDeviceTheme
 import fr.isen.androidsmartdevice.views.DeviceDetailView
 
 class DeviceDetailActivity : ComponentActivity() {
-    private val bleService = BLEService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

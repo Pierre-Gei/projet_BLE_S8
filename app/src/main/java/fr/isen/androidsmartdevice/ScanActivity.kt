@@ -1,6 +1,6 @@
 package fr.isen.androidsmartdevice
 
-import BLEInstance
+import fr.isen.androidsmartdevice.service.BLEInstance
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build

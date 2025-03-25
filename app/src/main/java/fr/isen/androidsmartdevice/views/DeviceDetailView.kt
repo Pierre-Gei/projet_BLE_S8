@@ -1,6 +1,6 @@
 package fr.isen.androidsmartdevice.views
 
-import BLEInstance
+import fr.isen.androidsmartdevice.service.BLEInstance
 import android.bluetooth.BluetoothDevice
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -39,10 +39,10 @@ class DeviceDetailView {
         val led1State = remember { mutableStateOf(false) }
         val led2State = remember { mutableStateOf(false) }
         val led3State = remember { mutableStateOf(false) }
-        val SW1Notification = remember { mutableStateOf(false) }
-        val SW3Notification = remember { mutableStateOf(false) }
-        val SW1Value = remember { mutableStateOf("") }
-        val SW3Value = remember { mutableStateOf("") }
+        val sw1Notification = remember { mutableStateOf(false) }
+        val sw3Notification = remember { mutableStateOf(false) }
+        val sw1Value = remember { mutableStateOf("") }
+        val sw3Value = remember { mutableStateOf("") }
         val context = LocalContext.current
         LaunchedEffect(Unit) {
             Log.d("BLE", "LaunchedEffect called")
@@ -56,11 +56,11 @@ class DeviceDetailView {
                         Log.d("BLE", "Characteristic UUID: ${characteristic.uuid}")
                         when (characteristic.uuid) {
                             BLEInstance.instance.bluetoothGatt.services[3].characteristics[0].uuid -> {
-                                SW1Value.value = value.joinToString()
+                                sw1Value.value = value.joinToString()
                             }
 
                             BLEInstance.instance.bluetoothGatt.services[2].characteristics[1].uuid -> {
-                                SW3Value.value = value.joinToString()
+                                sw3Value.value = value.joinToString()
                             }
                         }
                     }
@@ -141,9 +141,9 @@ class DeviceDetailView {
                 Row {
                     Text("Subscribe to notifications on switch 1")
                     Checkbox(
-                        checked = SW1Notification.value,
+                        checked = sw1Notification.value,
                         onCheckedChange = { isChecked ->
-                            SW1Notification.value = isChecked
+                            sw1Notification.value = isChecked
                             if (isChecked) {
                                 BLEInstance.instance.setCharacteristicNotification(3, 0, true)
                             } else {
@@ -152,15 +152,15 @@ class DeviceDetailView {
                         },
                     )
                 }
-                if (SW1Notification.value) {
-                    Text("Switch 1 value: ${SW1Value.value}")
+                if (sw1Notification.value) {
+                    Text("Switch 1 value: ${sw1Value.value}")
                 }
                 Row {
                     Text("Subscribe to notifications on switch 3")
                     Checkbox(
-                        checked = SW3Notification.value,
+                        checked = sw3Notification.value,
                         onCheckedChange = { isChecked ->
-                            SW3Notification.value = isChecked
+                            sw3Notification.value = isChecked
                             if (isChecked) {
                                 BLEInstance.instance.setCharacteristicNotification(2, 1, true)
                             } else {
@@ -169,8 +169,8 @@ class DeviceDetailView {
                         }
                     )
                 }
-                if (SW3Notification.value) {
-                    Text("Switch 3 value: ${SW3Value.value}")
+                if (sw3Notification.value) {
+                    Text("Switch 3 value: ${sw3Value.value}")
                 }
             } else {
                 Text(text = "Connecting to BLE device...")
