@@ -13,7 +13,7 @@ import androidx.annotation.RequiresPermission
 
 class BLEService {
     private var bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-    private lateinit var bluetoothGatt: BluetoothGatt
+    lateinit var bluetoothGatt: BluetoothGatt
     private var scanCallback: ScanCallback? = null
     var onCharacteristicChangedCallback: ((BluetoothGattCharacteristic) -> Unit)? = null
     private val handler = Handler()
@@ -122,6 +122,7 @@ class BLEService {
         val currentState = ledStates[led] ?: false
         val newState = !currentState
         ledStates[led] = newState
+        ledStates.filter { it.key != led }.forEach { ledStates[it.key] = false }
         writeCharacteristic(characteristic, if (newState) led else 0x00)
     }
 
