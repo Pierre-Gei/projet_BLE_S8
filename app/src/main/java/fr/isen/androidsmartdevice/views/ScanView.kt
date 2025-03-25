@@ -75,12 +75,14 @@ fun ScanView(
             )
         }
         Button(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
             onClick = onScanButtonClick,
         ) {
             Text(
                 text = if (isScanning) "Scanning..." else "Not Scanning",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
         }
@@ -92,7 +94,7 @@ fun ScanView(
                     if (showUnnamedDevices || ((device.name == null).not())) {
                         Text(
                             text = "${device.name ?: "Unnamed Device"} - ${device.address}",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier
                                 .padding(bottom = 8.dp)
                                 .clickable {
