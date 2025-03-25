@@ -2,7 +2,6 @@ package fr.isen.androidsmartdevice
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -85,53 +84,52 @@ class ScanActivity : ComponentActivity() {
 
 
 
-                if (BLEInstance.instance.checkPermission(context)) {
-                    Scaffold(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .windowInsetsPadding(WindowInsets.safeDrawing),
-                    ) { innerPadding ->
-                        ScanView(
-                            modifier = Modifier.padding(innerPadding),
-                            isScanning = isScanning,
-                            devices = devices,
-                            showUnnamedDevices = showUnnamedDevices,
-                            onShowUnnamedDevicesChange = { showUnnamedDevices = it },
-                            onScanButtonClick = {
-                                if (BLEInstance.instance.bleInitErr(context)) {
-                                    Toast.makeText(
-                                        context,
-                                        "BLE initialization error",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                Scaffold(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.safeDrawing),
+                ) { innerPadding ->
+                    ScanView(
+                        modifier = Modifier.padding(innerPadding),
+                        isScanning = isScanning,
+                        devices = devices,
+                        showUnnamedDevices = showUnnamedDevices,
+                        onShowUnnamedDevicesChange = { showUnnamedDevices = it },
+                        onScanButtonClick = {
+                            if (BLEInstance.instance.bleInitErr(context)) {
+                                Toast.makeText(
+                                    context,
+                                    "BLE initialization error",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                if (isScanning) {
+                                    BLEInstance.instance.stopScan()
+                                    isScanning = false
                                 } else {
-                                    if (isScanning) {
-                                        BLEInstance.instance.stopScan()
-                                        isScanning = false
+                                    if (BLEInstance.instance.checkPermission(context)) {
+                                        devices = emptySet()
+                                        BLEInstance.instance.startScan(
+                                            onDeviceFound = { device: BluetoothDevice ->
+                                                devices = devices + device
+                                            },
+                                            onScanStopped = {
+                                                isScanning = false
+                                            }
+                                        )
+                                        isScanning = true
                                     } else {
-                                        if (BLEInstance.instance.checkPermission(context)) {
-                                            devices = emptySet()
-                                            BLEInstance.instance.startScan(
-                                                onDeviceFound = { device: BluetoothDevice ->
-                                                    devices = devices + device
-                                                },
-                                                onScanStopped = {
-                                                    isScanning = false
-                                                }
-                                            )
-                                            isScanning = true
-                                        } else {
-                                            Toast.makeText(
-                                                context,
-                                                "Permission denied. BLE scan cannot proceed.",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
+                                        Toast.makeText(
+                                            context,
+                                            "Permission denied. BLE scan cannot proceed.",
+                                            Toast.LENGTH_LONG
+                                        ).show()
                                     }
                                 }
                             }
-                        )
-                    }
+                        }
+                    )
+
                 }
             }
         }
@@ -197,12 +195,5 @@ class ScanActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun checkPermission(permission: String, context: Context): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
     }
 }

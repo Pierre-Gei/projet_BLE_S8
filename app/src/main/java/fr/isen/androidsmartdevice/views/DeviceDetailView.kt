@@ -116,11 +116,11 @@ class DeviceDetailView {
                 if (sw1Notification.value) {
                     Text("Switch 1 value: ${sw1Value.value}")
                 }
-                Row (
+                Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Text("Notifications on switch 3")
                     Checkbox(
                         checked = sw3Notification.value,
