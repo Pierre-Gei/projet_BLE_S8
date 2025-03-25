@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -43,94 +42,100 @@ class DeviceDetailView {
         onNotificationToggle: (Int, Int, Boolean) -> Unit,
         modifier: Modifier
     ) {
-        Scaffold { contentPadding ->
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(contentPadding),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.la_mere_patriev3), // Ensure this is a PNG, JPG, or WEBP file
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .size(150.dp)
-                        .padding(bottom = 16.dp)
-                )
-                if (BLEInstance.instance.checkPermission(LocalContext.current)) {
-                    Text(text = "Device: ${device.name} (${device.address})")
-                }
-                if (isConnected.value) {
-                    Text(text = "Connected to device")
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Column {
-                            Image(
-                                imageVector = if (led1State.value) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
-                                contentDescription = "LED 1",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .clickable { onLedToggle(0x01) },
-                                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(androidx.compose.ui.graphics.Color.White)
-                            )
-                            Text(text = "LED 1")
-                        }
-                        Column {
-                            Image(
-                                imageVector = if (led2State.value) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
-                                contentDescription = "LED 2",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .clickable { onLedToggle(0x02) },
-                                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(androidx.compose.ui.graphics.Color.White)
-                            )
-                            Text(text = "LED 2")
-                        }
-                        Column {
-                            Image(
-                                imageVector = if (led3State.value) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
-                                contentDescription = "LED 3",
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .clickable { onLedToggle(0x03) },
-                                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(androidx.compose.ui.graphics.Color.White)
-                            )
-                            Text(text = "LED 3")
-                        }
-                    }
-                    Row {
-                        Text("Subscribe to notifications on switch 1")
-                        Checkbox(
-                            checked = sw1Notification.value,
-                            onCheckedChange = { isChecked ->
-                                sw1Notification.value = isChecked
-                                onNotificationToggle(3, 0, isChecked)
-                            },
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.la_mere_patriev3), // Ensure this is a PNG, JPG, or WEBP file
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(150.dp)
+                    .padding(bottom = 16.dp)
+            )
+            if (BLEInstance.instance.checkPermission(LocalContext.current)) {
+                Text(text = "Device: ${device.name} (${device.address})")
+            }
+            if (isConnected.value) {
+                Text(text = "Connected to device")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Column {
+                        Image(
+                            imageVector = if (led1State.value) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
+                            contentDescription = "LED 1",
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clickable { onLedToggle(0x01) },
+                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(androidx.compose.ui.graphics.Color.White)
                         )
+                        Text(text = "LED 1")
                     }
-                    if (sw1Notification.value) {
-                        Text("Switch 1 value: ${sw1Value.value}")
-                    }
-                    Row {
-                        Text("Subscribe to notifications on switch 3")
-                        Checkbox(
-                            checked = sw3Notification.value,
-                            onCheckedChange = { isChecked ->
-                                sw3Notification.value = isChecked
-                                onNotificationToggle(2, 1, isChecked)
-                            }
+                    Column {
+                        Image(
+                            imageVector = if (led2State.value) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
+                            contentDescription = "LED 2",
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clickable { onLedToggle(0x02) },
+                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(androidx.compose.ui.graphics.Color.White)
                         )
+                        Text(text = "LED 2")
                     }
-                    if (sw3Notification.value) {
-                        Text("Switch 3 value: ${sw3Value.value}")
+                    Column {
+                        Image(
+                            imageVector = if (led3State.value) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
+                            contentDescription = "LED 3",
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clickable { onLedToggle(0x03) },
+                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(androidx.compose.ui.graphics.Color.White)
+                        )
+                        Text(text = "LED 3")
                     }
-                } else {
-                    Text(text = "Connecting to BLE device...")
-                    CircularProgressIndicator()
                 }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Notifications on switch 1")
+                    Checkbox(
+                        checked = sw1Notification.value,
+                        onCheckedChange = { isChecked ->
+                            sw1Notification.value = isChecked
+                            onNotificationToggle(3, 0, isChecked)
+                        },
+                    )
+                }
+                if (sw1Notification.value) {
+                    Text("Switch 1 value: ${sw1Value.value}")
+                }
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text("Notifications on switch 3")
+                    Checkbox(
+                        checked = sw3Notification.value,
+                        onCheckedChange = { isChecked ->
+                            sw3Notification.value = isChecked
+                            onNotificationToggle(2, 1, isChecked)
+                        }
+                    )
+                }
+                if (sw3Notification.value) {
+                    Text("Switch 3 value: ${sw3Value.value}")
+                }
+            } else {
+                Text(text = "Connecting to BLE device...")
+                CircularProgressIndicator()
             }
         }
     }
